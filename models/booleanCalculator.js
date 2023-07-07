@@ -3,19 +3,25 @@ class BooleanCalculator {
         let inputArray = inputString.split(" ");
 
         let sortedArray = this.sortArrayIntoCategories(inputArray)
-        let splitElement = sortedArray[0].split(" ")
 
-        if (splitElement.length === 2 && splitElement[0] === "NOT") {
-            return this.getSingleValue(splitElement[1], true)
-        }
-        if (splitElement.length === 3 && splitElement[1] === "AND") {
-            return this.calculateAnd(splitElement)
-        }
-        if (splitElement.length === 3 && splitElement[1] === "OR") {
-            return this.calculateOR(splitElement)
-        }
-        return this.getSingleValue(sortedArray[0], false)
+        console.log("sorted array")
+        console.log(sortedArray)
 
+        return this.getFinalOutcome(sortedArray)
+
+    }
+
+    getFinalOutcome(sortedArray) {
+        let numberOfTrue = 0;
+        let numberOfFalse = 0;
+        sortedArray.forEach((element) => {
+            if (element === true) {
+                numberOfTrue++;
+            } else if(element === false) {
+                numberOfFalse++;
+            }
+        });
+        return numberOfTrue > numberOfFalse
     }
 
     getSingleValue(inputString, reversed) {
@@ -36,7 +42,21 @@ class BooleanCalculator {
     }
 
     sortArrayIntoCategories(inputArray) {
-          let sortedArray = []
+        let sortedArray = []
+
+        for(let i = 0; i < inputArray.length; i++) {
+            if ((inputArray[i - 1] !== "AND") && (inputArray[i - 1] !== "OR") && (inputArray[i - 1] !== "NOT")) {
+                if ((inputArray[i + 1] !== "AND") && (inputArray[i + 1] !== "OR") && (inputArray[i + 1] !== "NOT")) {
+                    if (inputArray[i] === "TRUE" || inputArray[i] === "FALSE") {
+                        sortedArray.push(this.getSingleValue(inputArray[i], false));
+                    }
+                }
+            }
+        }
+        console.log("sorted")
+        console.log(sortedArray)
+        console.log("input")
+        console.log(inputArray)
 
         let element0 = this.findElement(sortedArray, inputArray, "NOT")
 
@@ -50,7 +70,20 @@ class BooleanCalculator {
         inputArray.forEach((element) => {
             sortedArray.push(element)
         });
+
         return sortedArray;
+    }
+
+    calculateOutput(elementArray, joiner) {
+        if (elementArray.length === 2 && joiner === "NOT") {
+            return this.getSingleValue(elementArray[1], true)
+        }
+        if (elementArray.length === 3 && joiner === "AND") {
+            return this.calculateAnd(elementArray)
+        }
+        if (elementArray.length === 3 && joiner === "OR") {
+            return this.calculateOR(elementArray)
+        }
     }
 
     findElement(sortedArray, inputArray, searchText) {
@@ -59,20 +92,12 @@ class BooleanCalculator {
         for(let i = 0; i < numberOfElementInArray; i++) {
             let indexOfElement = inputArray.indexOf(searchText);
              if (searchText === "NOT") {
-                 const ElementsToMove = [inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ")
-
-                 sortedArray.push(ElementsToMove)
+                 const result = this.calculateOutput([[indexOfElement], inputArray[indexOfElement+1]], searchText)
+                 sortedArray.push(result)
              } else {
-               const ElementsToMove = [inputArray[indexOfElement-1], inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ")
-                 sortedArray.push(ElementsToMove)
+                 const result = this.calculateOutput([inputArray[indexOfElement-1], inputArray[indexOfElement], inputArray[indexOfElement+1]], searchText)
+                 sortedArray.push(result)
              }
-
-            if (searchText === "NOT") {
-                inputArray.splice(indexOfElement, 2)
-            } else {
-                inputArray.splice(indexOfElement-1, 3)
-            }
-
         }
         return [sortedArray, inputArray]
     }
