@@ -3,9 +3,6 @@ class BooleanCalculator {
         let inputArray = inputString.split(" ");
 
         let sortedArray = this.sortArrayIntoCategories(inputArray)
-        console.log('sort');
-        console.log(sortedArray)
-
         let splitElement = sortedArray[0].split(" ")
 
         if (splitElement.length === 2 && splitElement[0] === "NOT") {
@@ -13,6 +10,9 @@ class BooleanCalculator {
         }
         if (splitElement.length === 3 && splitElement[1] === "AND") {
             return this.calculateAnd(splitElement)
+        }
+        if (splitElement.length === 3 && splitElement[1] === "OR") {
+            return this.calculateOR(splitElement)
         }
         return this.getSingleValue(sortedArray[0], false)
 
@@ -28,39 +28,42 @@ class BooleanCalculator {
     }
 
     calculateAnd(inputArray) {
-        console.log('input')
-        console.log(inputArray)
         return inputArray[0] === inputArray[2];
+    }
+
+    calculateOR(inputArray) {
+        return inputArray.includes("TRUE");
     }
 
     sortArrayIntoCategories(inputArray) {
         let sortedArray = []
 
-        let numberOfNotsInArray = inputArray.filter(x => x==="NOT").length
+        let element0 = this.findElement(sortedArray, inputArray, "NOT")
 
-        for(let i = 0; i < numberOfNotsInArray; i++) {
-            let indexOfNot = inputArray.indexOf("NOT");
-            var ElementsToMove = [inputArray[indexOfNot], inputArray[indexOfNot+1]].join(" ")
-            sortedArray.push(ElementsToMove)
-            console.log('elements')
-            console.log(ElementsToMove)
+        let element = this.findElement(element0[0], element0[1], "AND")
 
-            inputArray.splice(inputArray[indexOfNot], 2)
-        }
+        let element2 = this.findElement(element[0], element[1], "OR")
 
-        let numberOfAndsInArray = inputArray.filter(x => x==="AND").length
-
-        for(let i = 0; i < numberOfAndsInArray; i++) {
-            let indexOfAnd = inputArray.indexOf("AND");
-            var ElementsToMove2 = [inputArray[indexOfAnd-1], inputArray[indexOfAnd], inputArray[indexOfAnd+1]].join(" ")
-            sortedArray.push(ElementsToMove2)
-            inputArray.splice(inputArray[indexOfAnd-1], 3)
-        }
+        inputArray = element2[0]
+        sortedArray = element2[1]
 
         inputArray.forEach((element) => {
             sortedArray.push(element)
         });
         return sortedArray;
+    }
+
+    findElement(sortedArray, inputArray, searchText) {
+        let numberOfAndsInArray = inputArray.filter(x => x===searchText).length
+
+        for(let i = 0; i < numberOfAndsInArray; i++) {
+            let indexOfElement = inputArray.indexOf(searchText);
+            let ElementsToMove = searchText === "NOT" ?  [inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ") : [inputArray[indexOfElement-1], inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ")
+
+            sortedArray.push(ElementsToMove)
+            searchText === "NOT" ? inputArray.splice(inputArray[indexOfElement], 2) : inputArray.splice(inputArray[indexOfElement-1], 3)
+        }
+        return [sortedArray, inputArray]
     }
 
 

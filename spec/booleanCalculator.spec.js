@@ -19,6 +19,13 @@ test('returns bools for AND values', () => {
     expect(calculator.calculate("TRUE AND FALSE")).toBe(false);
 });
 
+test('returns bools for OR values', () => {
+    calculator = new BooleanCalculator()
+    expect(calculator.calculate("TRUE OR TRUE")).toBe(true);
+    expect(calculator.calculate("TRUE OR FALSE")).toBe(true);
+    expect(calculator.calculate("FALSE OR FALSE")).toBe(false);
+});
+
 test('sortArrayIntoCategories', () => {
     // calculator = new BooleanCalculator()
     // expect(calculator.calculate("NOT TRUE NOT FALSE TRUE AND TRUE")).toEqual(["NOT TRUE", "NOT FALSE"]);
