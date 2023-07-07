@@ -1,0 +1,15 @@
+{
+  "name": "test-template",
+  "version": "1.0.0",
+  "main": "index.js",
+  "repository": "git@github.com:kate-49/test_template.git",
+  "author": "Kate <kate.smith@digital.justice.gov.uk>",
+  "license": "MIT",
+  "dependencies": {
+    "jest": "^28.1.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "coverage": "jest --coverage"
+  }
+}
