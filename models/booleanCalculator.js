@@ -36,7 +36,7 @@ class BooleanCalculator {
     }
 
     sortArrayIntoCategories(inputArray) {
-        let sortedArray = []
+          let sortedArray = []
 
         let element0 = this.findElement(sortedArray, inputArray, "NOT")
 
@@ -54,14 +54,25 @@ class BooleanCalculator {
     }
 
     findElement(sortedArray, inputArray, searchText) {
-        let numberOfAndsInArray = inputArray.filter(x => x===searchText).length
+        let numberOfElementInArray = inputArray.filter(x => x===searchText).length
 
-        for(let i = 0; i < numberOfAndsInArray; i++) {
+        for(let i = 0; i < numberOfElementInArray; i++) {
             let indexOfElement = inputArray.indexOf(searchText);
-            let ElementsToMove = searchText === "NOT" ?  [inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ") : [inputArray[indexOfElement-1], inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ")
+             if (searchText === "NOT") {
+                 const ElementsToMove = [inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ")
 
-            sortedArray.push(ElementsToMove)
-            searchText === "NOT" ? inputArray.splice(inputArray[indexOfElement], 2) : inputArray.splice(inputArray[indexOfElement-1], 3)
+                 sortedArray.push(ElementsToMove)
+             } else {
+               const ElementsToMove = [inputArray[indexOfElement-1], inputArray[indexOfElement], inputArray[indexOfElement+1]].join(" ")
+                 sortedArray.push(ElementsToMove)
+             }
+
+            if (searchText === "NOT") {
+                inputArray.splice(indexOfElement, 2)
+            } else {
+                inputArray.splice(indexOfElement-1, 3)
+            }
+
         }
         return [sortedArray, inputArray]
     }
