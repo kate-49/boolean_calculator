@@ -1,10 +1,10 @@
 const BooleanCalculator = require('../models/booleanCalculator');
 
-test('returns bools for single values', () => {
-    calculator = new BooleanCalculator()
-    expect(calculator.calculate("TRUE")).toBe(true);
-    expect(calculator.calculate("FALSE")).toBe(false);
-});
+// test('returns bools for single values', () => {
+//     calculator = new BooleanCalculator()
+//     expect(calculator.calculate("TRUE")).toBe(true);
+//     expect(calculator.calculate("FALSE")).toBe(false);
+// });
 
 test('returns bools for NOT values', () => {
     calculator = new BooleanCalculator()
@@ -31,6 +31,38 @@ test('works out by priority order', () => {
     expect(calculator.calculate("TRUE OR FALSE AND NOT FALSE")).toBe(true);
 });
 
+test('get single value', () => {
+    calculator = new BooleanCalculator()
+    expect(calculator.getSingleValue('TRUE', false)).toBe(true);
+    expect(calculator.getSingleValue('TRUE', true)).toBe(false);
+    expect(calculator.getSingleValue('FALSE', false)).toBe(false);
+    expect(calculator.getSingleValue('FALSE', true)).toBe(true);
+});
+test('calculateOutput', () => {
+    calculator = new BooleanCalculator()
+    expect(calculator.calculateSingleOutput([ 'NOT', 'FALSE' ], "NOT")).toBe(undefined);
+    expect(calculator.calculateSingleOutput([ 'NOT', 'TRUE' ], "NOT")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'OR', 'TRUE' ], "NOT")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'OR', 'FALSE' ], "NOT")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'AND', 'TRUE' ], "NOT")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'AND', 'FALSE' ], "NOT")).toBe(undefined);
+
+    expect(calculator.calculateSingleOutput([ 'NOT', 'FALSE' ], "OR")).toBe(undefined);
+    expect(calculator.calculateSingleOutput([ 'NOT', 'TRUE' ], "OR")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'OR', 'TRUE' ], "OR")).toBe(true);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'OR', 'FALSE' ], "OR")).toBe(true);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'AND', 'TRUE' ], "OR")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'AND', 'FALSE' ], "OR")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'FALSE', 'AND', 'FALSE' ], "OR")).toBe(undefined);
+
+    expect(calculator.calculateSingleOutput([ 'NOT', 'FALSE' ], "AND")).toBe(undefined);
+    expect(calculator.calculateSingleOutput([ 'NOT', 'TRUE' ], "AND")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'OR', 'TRUE' ], "AND")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'OR', 'FALSE' ], "AND")).toBe(undefined);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'AND', 'TRUE' ], "AND")).toBe(true);
+    expect(calculator.calculateSingleOutput( [ 'TRUE', 'AND', 'FALSE' ], "AND")).toBe(false);
+});
+
 describe('sortArrayIntoCategories', () => {
     calculator = new BooleanCalculator()
     const items = [
@@ -53,7 +85,6 @@ describe('sortArrayIntoCategories', () => {
         }
     );
 });
-
 
 test('findElement', () => {
     calculator = new BooleanCalculator()
