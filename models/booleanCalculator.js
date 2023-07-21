@@ -5,7 +5,7 @@ class BooleanCalculator {
         return this.getFinalOutcome(sortedArray)
     }
 
-    sortArrayIntoCategories(inputArray) {
+    removeSoloBools(inputArray) {
         let sortedArray = []
 
         for(let i = 0; i < inputArray.length; i++) {
@@ -17,19 +17,14 @@ class BooleanCalculator {
                 }
             }
         }
+        return sortedArray
+    }
 
-        let element0 = this.findElement(sortedArray, inputArray, "NOT")
-        let element = this.findElement(element0[0], element0[1], "AND")
-        let element2 = this.findElement(element[0], element[1], "OR")
-
-        inputArray = element2[0]
-        sortedArray = element2[1]
-
-        inputArray.forEach((element) => {
-            sortedArray.push(element)
-        });
-
-        return sortedArray;
+    sortArrayIntoCategories(inputArray) {
+        let sortedArray = this.removeSoloBools(inputArray)
+        let sortedArrayRound1 = this.findElement(sortedArray, inputArray, "NOT")
+        let sortedArrayRound2 = this.findElement(sortedArrayRound1, inputArray, "AND")
+        return this.findElement(sortedArrayRound2, inputArray, "OR");
     }
 
     getFinalOutcome(sortedArray) {
@@ -46,8 +41,6 @@ class BooleanCalculator {
     }
 
     getSingleValue(inputString, reversed) {
-        console.log("single value")
-        console.log(inputString)
         if (inputString === "TRUE") {
             return reversed !== true;
         } else if (inputString === "FALSE") {
@@ -55,22 +48,14 @@ class BooleanCalculator {
         }
         return null;
     }
-
-    calculateAnd(inputArray) {
-        return inputArray[0] === inputArray[2];
-    }
-
-    calculateOR(inputArray) {
-        return inputArray.includes("TRUE");
-    }
-
     calculateSingleOutput(elementArray, joiner) {
         if (elementArray.includes(joiner)) {
             switch(joiner) {
                 case "AND":
-                    return this.calculateAnd(elementArray)
+                    // check number of unique elements in array
+                    return (new Set(elementArray).size) === 2;
                 case "OR":
-                    return this.calculateOR(elementArray)
+                    return elementArray.includes("TRUE");
             }
         }
     }
@@ -88,7 +73,7 @@ class BooleanCalculator {
                  sortedArray.push(result)
              }
         }
-        return [sortedArray, inputArray]
+        return sortedArray
     }
 
 

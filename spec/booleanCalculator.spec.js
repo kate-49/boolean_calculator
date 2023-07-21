@@ -1,10 +1,10 @@
 const BooleanCalculator = require('../models/booleanCalculator');
 
-// test('returns bools for single values', () => {
-//     calculator = new BooleanCalculator()
-//     expect(calculator.calculate("TRUE")).toBe(true);
-//     expect(calculator.calculate("FALSE")).toBe(false);
-// });
+test('returns bools for single values', () => {
+    calculator = new BooleanCalculator()
+    expect(calculator.calculate("TRUE")).toBe(true);
+    expect(calculator.calculate("FALSE")).toBe(false);
+});
 
 test('returns bools for NOT values', () => {
     calculator = new BooleanCalculator()
@@ -38,6 +38,15 @@ test('get single value', () => {
     expect(calculator.getSingleValue('FALSE', false)).toBe(false);
     expect(calculator.getSingleValue('FALSE', true)).toBe(true);
 });
+
+test('removeSoloBools', () => {
+    calculator = new BooleanCalculator()
+    expect(calculator.getSingleValue('TRUE', false)).toBe(true);
+    expect(calculator.getSingleValue('TRUE', true)).toBe(false);
+    expect(calculator.getSingleValue('FALSE', false)).toBe(false);
+    expect(calculator.getSingleValue('FALSE', true)).toBe(true);
+});
+
 test('calculateOutput', () => {
     calculator = new BooleanCalculator()
     expect(calculator.calculateSingleOutput([ 'NOT', 'FALSE' ], "NOT")).toBe(undefined);
@@ -66,16 +75,16 @@ test('calculateOutput', () => {
 describe('sortArrayIntoCategories', () => {
     calculator = new BooleanCalculator()
     const items = [
-        [["TRUE", "AND", "TRUE"], ["TRUE", "AND", "TRUE", true]],
-        [["NOT", "TRUE"], ["NOT", "TRUE", false]],
-        [["TRUE", "OR", "TRUE"], ["TRUE", "OR", "TRUE", true]],
-        [["TRUE", "OR", "TRUE", "TRUE"], ["TRUE", "OR", "TRUE", "TRUE", true, true]],
-        [["TRUE", "TRUE", "OR", "TRUE"], ["TRUE", "TRUE", "OR", "TRUE", true, true]],
-        [["TRUE", "AND", "TRUE", "FALSE"], ["TRUE", "AND", "TRUE", "FALSE", false, true]],
-        [["NOT", "TRUE", "TRUE"], ["NOT", "TRUE", "TRUE", true, false]],
-        [[ 'TRUE', 'OR', 'TRUE', "NOT", "TRUE", "NOT", "TRUE" ],['TRUE', 'OR', 'TRUE', "NOT", "TRUE", "NOT", "TRUE", false, false, true]],
-        [["NOT", "TRUE", "TRUE", "TRUE", "AND", "TRUE"], ["NOT", "TRUE", "TRUE", "TRUE", "AND", "TRUE", true, false, true]],
-        [[ 'TRUE', 'OR', 'TRUE', "TRUE", "AND", "TRUE", "NOT", "TRUE"], ['TRUE', 'OR', 'TRUE', "TRUE", "AND", "TRUE", "NOT", "TRUE", false, true, true]],
+        [["TRUE", "AND", "TRUE"], [true]],
+        [["NOT", "TRUE"], [false]],
+        [["TRUE", "OR", "TRUE"], [true]],
+        [["TRUE", "OR", "TRUE", "TRUE"], [true, true]],
+        [["TRUE", "TRUE", "OR", "TRUE"], [true, true]],
+        [["TRUE", "AND", "TRUE", "FALSE"], [false, true]],
+        [["NOT", "TRUE", "TRUE"], [true, false]],
+        [[ 'TRUE', 'OR', 'TRUE', "NOT", "TRUE", "NOT", "TRUE" ],[false, false, true]],
+        [["NOT", "TRUE", "TRUE", "TRUE", "AND", "TRUE"], [true, false, true]],
+        [[ 'TRUE', 'OR', 'TRUE', "TRUE", "AND", "TRUE", "NOT", "TRUE"], [false, true, true]],
     ];
     test.each(items)(
         "given %p as input array",
@@ -86,21 +95,66 @@ describe('sortArrayIntoCategories', () => {
     );
 });
 
+describe('removeSoloBools', () => {
+    calculator = new BooleanCalculator()
+    const items = [
+        [["TRUE", "AND", "TRUE"], []],
+        [["NOT", "TRUE"], []],
+        [["TRUE", "OR", "TRUE"], []],
+        [["TRUE", "OR", "TRUE", "TRUE"], [true]],
+        [["TRUE", "TRUE", "OR", "TRUE"], [true]],
+        [["TRUE", "AND", "TRUE", "FALSE"], [false]],
+        [["NOT", "TRUE", "TRUE"], [true]],
+        [['TRUE', 'OR', 'TRUE', "NOT", "TRUE", "NOT", "TRUE" ],[]],
+        [["NOT", "TRUE", "TRUE", "TRUE", "AND", "TRUE"], [true]],
+        [[ 'TRUE', 'OR', 'TRUE', "TRUE", "AND", "TRUE", "NOT", "TRUE"], []],
+    ];
+    test.each(items)(
+        "given %p as input array",
+        (inputArray, expectedOutput) => {
+            const result = calculator.removeSoloBools(inputArray);
+            expect(result).toEqual(expectedOutput);
+        }
+    );
+});
+
 test('findElement', () => {
     calculator = new BooleanCalculator()
-    expect(calculator.findElement([], ["NOT", "TRUE"], "NOT")).toEqual( [[false], ["NOT", "TRUE"]]);
-    expect(calculator.findElement(["NOT TRUE"], ["NOT", "TRUE"], "NOT")).toEqual([["NOT TRUE", false], ["NOT", "TRUE"]]);
-    expect(calculator.findElement([], ["TRUE", "AND", "TRUE"], "NOT")).toEqual([[], ["TRUE", "AND", "TRUE"]]);
-    expect(calculator.findElement([], ["NOT", "TRUE", "TRUE", "AND", "TRUE"], "NOT")).toEqual([[false], ["NOT", "TRUE", "TRUE", "AND", "TRUE"]]);
+    expect(calculator.findElement([], ["NOT", "TRUE"], "NOT")).toEqual( [false]);
+    expect(calculator.findElement([false], ["NOT", "TRUE"], "NOT")).toEqual([false, false]);
+    expect(calculator.findElement([], ["TRUE", "AND", "TRUE"], "NOT")).toEqual([]);
+    expect(calculator.findElement([], ["NOT", "TRUE", "TRUE", "AND", "TRUE"], "NOT")).toEqual([false]);
 
-    expect(calculator.findElement(["NOT TRUE"], [], "AND")).toEqual([["NOT TRUE"], []]);
-    expect(calculator.findElement([], ["TRUE", "AND", "TRUE"], "AND")).toEqual( [[true], ["TRUE", "AND", "TRUE"]]);
-    expect(calculator.findElement(["NOT TRUE"], ["TRUE", "AND", "TRUE"], "AND")).toEqual([["NOT TRUE", true], ["TRUE", "AND", "TRUE"]]);
-    expect(calculator.findElement([], ["TRUE", "OR", "TRUE", "TRUE", "AND", "TRUE"], "AND")).toEqual([[true], ["TRUE", "OR", "TRUE", "TRUE", "AND", "TRUE"]]);
+    expect(calculator.findElement([true], [], "AND")).toEqual([true]);
+    expect(calculator.findElement([], ["TRUE", "AND", "TRUE"], "AND")).toEqual( [true]);
+    expect(calculator.findElement([false, false], ["TRUE", "AND", "TRUE"], "AND")).toEqual([false, false, true]);
+    expect(calculator.findElement([], ["TRUE", "OR", "TRUE", "TRUE", "AND", "TRUE"], "AND")).toEqual([true]);
 
-    expect(calculator.findElement([], ["NOT", "TRUE", "TRUE", "OR", "TRUE"], "OR")).toEqual([[true], ["NOT", "TRUE", "TRUE", "OR", "TRUE"]]);
-    expect(calculator.findElement([], ["NOT", "TRUE", "TRUE", "OR", "TRUE"], "NOT")).toEqual([[false], ["NOT", "TRUE", "TRUE", "OR", "TRUE"]]);
-    expect(calculator.findElement([], ["TRUE", "OR", "TRUE", "TRUE", "AND", "TRUE"], "OR")).toEqual([[true], ["TRUE", "OR", "TRUE", "TRUE", "AND", "TRUE"]]);
-    expect(calculator.findElement(["TRUE AND TRUE"], ["NOT", "TRUE", "TRUE", "AND", "TRUE"], "OR")).toEqual([["TRUE AND TRUE"], ["NOT", "TRUE", "TRUE", "AND", "TRUE"]]);
-    expect(calculator.findElement(["TRUE AND TRUE"], ["TRUE", "OR", "TRUE"], "OR")).toEqual([["TRUE AND TRUE", true], ["TRUE", "OR", "TRUE"]]);
+    expect(calculator.findElement([], ["NOT", "TRUE", "TRUE", "OR", "TRUE"], "OR")).toEqual([true]);
+    expect(calculator.findElement([], ["NOT", "TRUE", "TRUE", "OR", "TRUE"], "NOT")).toEqual([false]);
+    expect(calculator.findElement([], ["TRUE", "OR", "TRUE", "TRUE", "AND", "TRUE"], "OR")).toEqual([true]);
+    expect(calculator.findElement([true], ["NOT", "TRUE", "TRUE", "AND", "TRUE"], "OR")).toEqual([true]);
+    expect(calculator.findElement([false, true], ["TRUE", "OR", "TRUE"], "OR")).toEqual([false, true, true]);
 })
+
+describe('e2e', () => {
+    calculator = new BooleanCalculator()
+    const items = [
+        ["TRUE OR TRUE OR TRUE AND FALSE", true],
+        ["TRUE OR FALSE AND NOT FALSE", true],
+        ["TRUE OR FALSE", true],
+        ["FALSE OR FALSE", false],
+        ["TRUE AND FALSE", false],
+        ["TRUE AND TRUE", true],
+        ["NOT TRUE", false],
+        ["TRUE", true],
+        ["FALSE", false],
+    ];
+    test.each(items)(
+        "given %p as input array",
+        (inputArray, expectedOutput) => {
+            const result = calculator.calculate(inputArray);
+            expect(result).toEqual(expectedOutput);
+        }
+    );
+});
