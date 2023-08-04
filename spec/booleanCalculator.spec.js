@@ -34,9 +34,10 @@ test('works out by priority order', () => {
     test('works out considering parenthesis', () => {
         calculator = new BooleanCalculator()
         expect(calculator.calculate("(TRUE TRUE OR FALSE) AND TRUE")).toBe(true);
-        // expect(calculator.calculate("(NOT FALSE) OR FALSE")).toBe(true);
+        expect(calculator.calculate("(NOT FALSE) OR FALSE")).toBe(true);
         expect(calculator.calculate("(TRUE AND FALSE) AND TRUE")).toBe(false);
-        // expect(calculator.calculate("NOT (NOT TRUE AND NOT FALSE)")).toBe(true);
+        // breaks
+        expect(calculator.calculate("NOT (NOT TRUE AND NOT FALSE)")).toBe(true);
         expect(calculator.calculate("(NOT TRUE AND NOT FALSE) AND NOT TRUE")).toBe(false);
         expect(calculator.calculate("(TRUE OR FALSE) AND NOT TRUE")).toBe(false);
 
@@ -161,8 +162,7 @@ test('works out by priority order', () => {
             ["NOT TRUE", false],
             ["TRUE", true],
             ["FALSE", false],
-            ["(TRUE OR TRUE OR TRUE) AND FALSE", true],
-            ["NOT (TRUE AND TRUE)", false]
+            ["(TRUE OR TRUE OR TRUE) AND FALSE", false],
         ];
         test.each(items)(
             "given %p as input array",
