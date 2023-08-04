@@ -11,20 +11,21 @@ class BooleanCalculator {
     }
 
     mapObjectValues (inputArray = {}) {
+        let outputArray = []
         for (var key in inputArray) {
             var val = inputArray[ key ];
 
             if (val === "FALSE") {
-                inputArray[ key ] = false;
+                outputArray[ key ] = false;
             }
             else if (val === "TRUE") {
-                inputArray[ key ] = true;
+                outputArray[ key ] = true;
             }
-            else if (val === "") {
-                inputArray[ key ] = null;
+            else if (val !== "") {
+                outputArray[ key ] = val;
             }
         }
-        return inputArray
+        return outputArray
     }
 
     calculateForParenthesis(inputString) {
@@ -37,9 +38,6 @@ class BooleanCalculator {
         let finalOutcome1 = this.getFinalOutcome(sortedArray)
 
         secondArray.push(finalOutcome1)
-        secondArray = secondArray.filter(function(item) {
-            return item !== null
-        })
         secondArray.push(this.mapObjectValues(bothInputArrays[1].split(" ")))
         console.log('secondArray')
         console.log(secondArray.flat())
