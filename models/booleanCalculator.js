@@ -1,11 +1,12 @@
 class BooleanCalculator {
-    calculate(inputString) {
-        // its not converting to a bool its converting to a 'false'
-        // if(inputString.includes('(')) {
-        //     return this.calculateForParenthesis(inputString)
-        // }
+    constructor() {
+        this.timeFunctionCalled = 0;
+    }
+    calculate(inputString) {let hasParenthesis = false
+        if(inputString.includes('(')) {
+            this.calculateForParenthesis(inputString)
+        }
         let inputArray = inputString.split(" ");
-
         inputArray = this.mapObjectValues(inputArray)
 
         let sortedArray = this.sortArrayIntoCategories(inputArray)
@@ -28,15 +29,26 @@ class BooleanCalculator {
 
     calculateForParenthesis(inputString){
         let bothInputArrays = this.breakStringIntoSubArrays(inputString);
-        // can i sub out all true to be true?
-        console.log(bothInputArrays)
-        console.log(bothInputArrays[0])
-
-        let sortedArray = this.sortArrayIntoCategories(bothInputArrays[0].split(" "))
-        console.log(sortedArray)
-        // sortedArray.push(this.sortArrayIntoCategories(bothInputArrays[1].split(" ")))
-        console.log("after push")
-        console.log(sortedArray)
+        let secondArray = []
+        console.log("1")
+        let inputArray1 = this.mapObjectValues(bothInputArrays[0].split(" "))
+        console.log("2")
+        let sortedArray = this.sortArrayIntoCategories(inputArray1)
+        console.log("3")
+        let finalOutcome1 = this.getFinalOutcome(sortedArray)
+        console.log("4")
+        secondArray.push(finalOutcome1)
+        console.log("5")
+        secondArray.push(this.mapObjectValues(bothInputArrays[1].split(" ")))
+        console.log("6")
+        let k = this.sortArrayIntoCategories(secondArray.flat())
+        console.log("7")
+        console.log("k")
+        console.log(k)
+        console.log("function")
+        console.log(this.timeFunctionCalled)
+        return this.getFinalOutcome(k)
+        console.log("8")
     }
 
     breakStringIntoSubArrays(inputString){
@@ -59,8 +71,6 @@ class BooleanCalculator {
                 }
             }
         }
-        console.log('solo bools')
-        console.log(sortedArray)
         return sortedArray
     }
 
@@ -73,16 +83,23 @@ class BooleanCalculator {
     }
 
     getFinalOutcome(sortedArray) {
+        console.log('final outcome input')
+        console.log(sortedArray)
+        this.timeFunctionCalled++
         let numberOfTrue = 0;
         let numberOfFalse = 0;
         sortedArray.forEach((element) => {
+            console.log("element")
+            console.log(element)
             if (element === true) {
                 numberOfTrue++;
             } else if(element === false) {
                 numberOfFalse++;
             }
         });
-        return numberOfTrue > numberOfFalse
+        console.log('final outcome output')
+        console.log(numberOfTrue >= numberOfFalse)
+        return numberOfTrue >= numberOfFalse
     }
 
     getSingleValue(bool, reversed) {
