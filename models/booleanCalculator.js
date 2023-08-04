@@ -31,56 +31,25 @@ class BooleanCalculator {
     calculateForParenthesis(inputString) {
         let bothInputArrays = this.breakStringIntoSubArrays(inputString);
         let secondArray = []
-        console.log('input array 1')
-        console.log(this.mapObjectValues(bothInputArrays[0].split(" ")))
         let inputArray1 = this.mapObjectValues(bothInputArrays[0].split(" "))
         let sortedArray = this.sortArrayIntoCategories(inputArray1)
         let finalOutcome1 = this.getFinalOutcome(sortedArray)
 
         secondArray.push(finalOutcome1)
         secondArray.push(this.mapObjectValues(bothInputArrays[1].split(" ")))
-        console.log('secondArray')
-        console.log(secondArray.flat())
         let k = this.sortArrayIntoCategories(secondArray.flat())
-        console.log('k')
-        console.log(k)
-        // k.forEach((element) => {
-        //     console.log('k in element')
-        //     console.log(k)
-        //     if (element !== 'NOT' && element !== null) {
-        //         console.log('time to return')
-        //         return this.getSingleValue(element, true)
-        //     }
-        // })
-
         return this.getFinalOutcome(k)
 
     }
 
     breakStringIntoSubArrays(inputString){
-        let a = []
         const inputStringForParenthesis = inputString.slice([inputString.indexOf("(")+1], [inputString.indexOf(")")])
-        console.log('1')
-        console.log(inputStringForParenthesis)
-        let restOfInputString = inputString.replace(inputStringForParenthesis, "");
-        console.log('2')
-        console.log(restOfInputString)
-
-        let restOfInputStringW = restOfInputString.replace(" ()", "");
-        restOfInputStringW = restOfInputStringW.replace("()", "");
-        console.log("3")
-        console.log(restOfInputStringW)
-        console.log("inputStringForParenthesis")
-        console.log(inputStringForParenthesis)
-        a.push(inputStringForParenthesis)
-        a.push(restOfInputStringW)
-        console.log(a)
-        return [inputStringForParenthesis, restOfInputStringW]
+        const restOfInputString = inputString.replace(inputStringForParenthesis, "");
+        return [inputStringForParenthesis, restOfInputString.replace("()", "")]
     }
 
-    removeSoloBools(inputArray) {
+    evaluateSoloBools(inputArray) {
         let sortedArray = []
-        console.log('in solo bools')
         for(let i = 0; i < inputArray.length; i++) {
             if ((inputArray[i - 1] !== "AND") && (inputArray[i - 1] !== "OR") && (inputArray[i - 1] !== "NOT")) {
                 if ((inputArray[i + 1] !== "AND") && (inputArray[i + 1] !== "OR") && (inputArray[i + 1] !== "NOT")) {
@@ -95,6 +64,19 @@ class BooleanCalculator {
 
     sortArrayIntoCategories(inputArray) {
         let newArray = []
+
+        let returnedElements = this.evaluateSoloBools(inputArray)
+        if (returnedElements.length >= 1) {
+            newArray.push(returnedElements)
+        }
+
+        let searchableElements = ["NOT", "AND", "OR"]
+        searchableElements.forEach((element) => {
+            returnedElements = this.countAllIndividualElements(inputArray, element)
+            if (returnedElements.length >= 1) {
+                newArray.push(returnedElements)
+            }
+        })
         if (inputArray.length === 2) {
             if (inputArray.includes('NOT')) {
                 inputArray.forEach((element) => {
@@ -103,23 +85,6 @@ class BooleanCalculator {
                     }
                 })
             }
-        }
-
-        let returnedElements = this.removeSoloBools(inputArray)
-        if (returnedElements.length >= 1) {
-            newArray.push(returnedElements)
-        }
-        returnedElements = this.countAllIndividualElements(inputArray, "NOT")
-        if (returnedElements.length >= 1) {
-            newArray.push(returnedElements)
-        }
-        returnedElements = this.countAllIndividualElements(inputArray, "AND")
-        if (returnedElements.length >= 1) {
-            newArray.push(returnedElements)
-        }
-        returnedElements = this.countAllIndividualElements(inputArray, "OR")
-        if (returnedElements.length >= 1) {
-            newArray.push(returnedElements)
         }
         return newArray.flat();
     }

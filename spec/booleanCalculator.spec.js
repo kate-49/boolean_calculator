@@ -57,9 +57,11 @@ test('works out by priority order', () => {
         expect(calculator.getSingleValue(true, true)).toBe(false);
         expect(calculator.getSingleValue(false, false)).toBe(false);
         expect(calculator.getSingleValue(false, true)).toBe(true);
+        expect(calculator.getSingleValue("", false)).toBe(null);
+
     });
 
-    describe('removeSoloBools', () => {
+    describe('evaluateSoloBools', () => {
         calculator = new BooleanCalculator()
         const items = [
             [[true, "AND", true], []],
@@ -76,7 +78,7 @@ test('works out by priority order', () => {
         test.each(items)(
             "given %p as input array",
             (inputArray, expectedOutput) => {
-                const result = calculator.removeSoloBools(inputArray);
+                const result = calculator.evaluateSoloBools(inputArray);
                 expect(result).toEqual(expectedOutput);
             }
         );
